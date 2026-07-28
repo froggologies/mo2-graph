@@ -24,3 +24,7 @@ pnpm-debug.log*
 # skills
 skills-lock.json
 .agents/
+.shadcn/
+
+# others
+plan.md

@@ -73,13 +73,18 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
       
       try {
         let metaFileHandle: FileSystemFileHandle | undefined
+        const foundEntries: string[] = []
         for await (const [fname, fentry] of (modDirHandle as any).entries()) {
+          foundEntries.push(`${fname}(${fentry.kind})`)
           if (fname.toLowerCase() === "meta.ini" && fentry.kind === "file") {
             metaFileHandle = fentry as FileSystemFileHandle
             break
           }
         }
-        if (!metaFileHandle) throw new Error("meta.ini not found")
+        if (!metaFileHandle) {
+          console.warn(`meta.ini not found in ${entry.name}, found: [${foundEntries.join(", ")}]`)
+          throw new Error("meta.ini not found")
+        }
 
         const metaFile = await metaFileHandle.getFile()
         const buffer = await metaFile.arrayBuffer()

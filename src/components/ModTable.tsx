@@ -32,8 +32,14 @@ interface ModTableProps {
   setShowUnmanaged: (show: boolean) => void
 }
 
-export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProps) {
-  const [sorting, setSorting] = React.useState<any>([{ id: "priority", desc: false }])
+export function ModTable({
+  mods,
+  showUnmanaged,
+  setShowUnmanaged,
+}: ModTableProps) {
+  const [sorting, setSorting] = React.useState<any>([
+    { id: "priority", desc: false },
+  ])
   const [columnFilters, setColumnFilters] = React.useState<any>([])
   const [columnVisibility, setColumnVisibility] = React.useState<any>({})
 
@@ -61,18 +67,22 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
   })
 
   return (
-    <div className="flex flex-col h-full overflow-hidden">
-      <div className="flex items-center gap-2 px-2 py-1 border-b shrink-0 bg-muted/30">
+    <div className="flex h-full scrollbar-thin scrollbar-thumb-white scrollbar-track-muted flex-col overflow-hidden">
+      <div className="flex shrink-0 items-center gap-2 border-b bg-muted/30 px-2 py-1">
         <div className="flex items-center gap-1">
-          <span className="text-xs font-semibold text-muted-foreground">Mods List</span>
+          <span className="text-xs font-semibold text-muted-foreground">
+            Mods List
+          </span>
           <span className="text-xs text-muted-foreground">({mods.length})</span>
         </div>
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="ml-auto flex items-center gap-2">
           <Input
             placeholder="Filter mods by name..."
             value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-            className="max-w-[180px] h-7 text-xs"
+            onChange={(event) =>
+              table.getColumn("name")?.setFilterValue(event.target.value)
+            }
+            className="h-7 max-w-[180px] text-xs"
           />
           <Button
             size="sm"
@@ -97,7 +107,9 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
                       key={column.id}
                       className="capitalize"
                       checked={column.getIsVisible()}
-                      onCheckedChange={(value) => column.toggleVisibility(!!value)}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
                     >
                       {column.id}
                     </DropdownMenuCheckboxItem>
@@ -107,21 +119,24 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
           </DropdownMenu>
         </div>
       </div>
-      <div className="flex-1 p-0 overflow-auto">
+      <div className="flex-1 overflow-auto p-0">
         <div className="border-b [&>div]:overflow-visible">
           <Table className="w-full border-collapse">
-            <TableHeader className="sticky top-0 z-10 shadow-sm bg-muted">
+            <TableHeader className="sticky top-0 z-10 bg-muted shadow-sm">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="hover:bg-transparent">
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead
                         key={header.id}
-                        className="h-8 border-x border-b border-border/50 px-2 py-1 text-xs font-semibold text-foreground bg-muted"
+                        className="h-8 border-x border-b border-border/50 bg-muted px-2 py-1 text-xs font-semibold text-foreground"
                       >
                         {header.isPlaceholder
                           ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </TableHead>
                     )
                   })}
@@ -135,16 +150,19 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
                     return (
                       <TableRow
                         key={row.id}
-                        className="bg-secondary/60 hover:bg-secondary/80 font-bold"
+                        className="bg-secondary/60 font-bold hover:bg-secondary/80"
                       >
                         {row.getVisibleCells().map((cell, idx) => {
                           if (idx === 0) {
                             return (
                               <TableCell
                                 key={cell.id}
-                                className="border-x border-b border-border/50 px-2 py-1 text-xs align-top"
+                                className="border-x border-b border-border/50 px-2 py-1 align-top text-xs"
                               >
-                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                                )}
                               </TableCell>
                             )
                           }
@@ -153,7 +171,7 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
                               <TableCell
                                 key={cell.id}
                                 colSpan={row.getVisibleCells().length - 1}
-                                className="border-x border-b border-border/50 px-2 py-1 text-xs text-left text-foreground font-semibold"
+                                className="border-x border-b border-border/50 px-2 py-1 text-left text-xs font-semibold text-foreground"
                               >
                                 {row.original.name.replace(/_separator$/, "")}
                               </TableCell>
@@ -174,9 +192,12 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
-                          className="border-x border-b border-border/50 px-2 py-1 text-xs align-top"
+                          className="border-x border-b border-border/50 px-2 py-1 align-top text-xs"
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
                         </TableCell>
                       ))}
                     </TableRow>
@@ -184,7 +205,10 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
                 })
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center text-sm">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center text-sm"
+                  >
                     No results.
                   </TableCell>
                 </TableRow>

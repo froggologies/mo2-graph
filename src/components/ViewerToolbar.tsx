@@ -85,13 +85,15 @@ Write-Host "meta.txt cache created successfully!"`
   }
 
   return (
-    <div className="flex w-full items-center gap-2 px-2 py-1 border-b bg-background shrink-0 z-10 relative">
-      <h1 className="text-sm font-bold mr-2">MO2 Graph</h1>
+    <div className="relative z-10 flex w-full shrink-0 items-center gap-2 border-b bg-background px-2 py-1">
+      <h1 className="mr-2 text-sm font-bold">MO2 Graph</h1>
       <Button size="sm" variant="outline" onClick={onPickFolder}>
         Select MO2 Folder
       </Button>
       {handle && (
-        <span className="text-xs text-muted-foreground truncate max-w-[200px]">{handle.name}</span>
+        <span className="max-w-[200px] truncate text-xs text-muted-foreground">
+          {handle.name}
+        </span>
       )}
       {profiles.length > 0 && (
         <>
@@ -99,7 +101,7 @@ Write-Host "meta.txt cache created successfully!"`
             value={selectedProfile}
             onValueChange={(val) => onSelectProfile(val ?? "")}
           >
-            <SelectTrigger className="w-[160px] h-7 text-xs">
+            <SelectTrigger className="h-7 w-[160px] text-xs">
               <SelectValue placeholder="Select Profile" />
             </SelectTrigger>
             <SelectContent>
@@ -113,7 +115,7 @@ Write-Host "meta.txt cache created successfully!"`
           <Button size="sm" onClick={onLoadMods} variant="secondary">
             Load
           </Button>
-          
+
           {hasMods && (
             <Button size="sm" onClick={onSyncNexus} disabled={isSyncing}>
               {isSyncing ? "Syncing..." : "Sync Nexus"}
@@ -123,38 +125,61 @@ Write-Host "meta.txt cache created successfully!"`
           {metaIniBlocked && (
             <Dialog>
               <DialogTrigger asChild>
-                <Button size="sm" variant="destructive" className="ml-2 gap-1 flex items-center">
-                  <AlertTriangle className="w-4 h-4" />
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="ml-2 flex items-center gap-1"
+                >
+                  <AlertTriangle className="h-4 w-4" />
                   Windows Sync Blocked
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogContent className="max-h-[80vh] max-w-4xl! overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Windows File Access Blocked</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 text-sm mt-4 break-words">
+                <div className="mt-4 space-y-4 text-sm break-words">
                   <p>
-                    Your browser's security settings explicitly block reading <code className="bg-muted px-1 py-0.5 rounded">.ini</code> files on Windows. We cannot read the Nexus IDs from your mods automatically.
+                    Your browser's security settings explicitly block reading{" "}
+                    <code className="rounded bg-muted px-1 py-0.5">.ini</code>{" "}
+                    files on Windows. We cannot read the Nexus IDs from your
+                    mods automatically.
                   </p>
                   <p>
-                    To fix this, we can create a temporary cache folder named <code className="bg-muted px-1 py-0.5 rounded">meta_cache</code> inside your MO2 folder. The app will automatically look for <code className="bg-muted px-1 py-0.5 rounded">meta.txt</code> files there.
+                    To fix this, we can create a temporary cache folder named{" "}
+                    <code className="rounded bg-muted px-1 py-0.5">
+                      meta_cache
+                    </code>{" "}
+                    inside your MO2 folder. The app will automatically look for{" "}
+                    <code className="rounded bg-muted px-1 py-0.5">
+                      meta.txt
+                    </code>{" "}
+                    files there.
                   </p>
                   <p className="font-semibold">Instructions:</p>
-                  <ol className="list-decimal pl-5 space-y-2">
+                  <ol className="list-decimal space-y-2 pl-5">
                     <li>Copy the PowerShell script below.</li>
-                    <li>Change <code className="bg-muted px-1 py-0.5 rounded">"C:\Path\To\{mo2FolderName}"</code> to your actual MO2 installation path.</li>
+                    <li>
+                      Change{" "}
+                      <code className="rounded bg-muted px-1 py-0.5">
+                        "C:\Path\To\{mo2FolderName}"
+                      </code>{" "}
+                      to your actual MO2 installation path.
+                    </li>
                     <li>Open PowerShell and run the script.</li>
-                    <li>Come back here and click <strong>Load</strong> again.</li>
+                    <li>
+                      Come back here and click <strong>Load</strong> again.
+                    </li>
                   </ol>
-                  
-                  <div className="relative group">
-                    <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto whitespace-pre-wrap break-all">
+
+                  <div className="group relative">
+                    <pre className="overflow-x-auto rounded-md bg-muted p-4 text-xs break-all whitespace-pre-wrap">
                       {psScript}
                     </pre>
-                    <Button 
-                      size="sm" 
-                      variant="secondary" 
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                    <Button
+                      size="sm"
+                      variant="secondary"
+                      className="absolute top-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
                       onClick={copyScript}
                     >
                       Copy Script
@@ -168,7 +193,11 @@ Write-Host "meta.txt cache created successfully!"`
       )}
       <div className="ml-auto flex items-center gap-2">
         <Button variant="ghost" size="sm" onClick={toggleDarkMode}>
-          {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          {isDarkMode ? (
+            <Sun className="h-4 w-4" />
+          ) : (
+            <Moon className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </div>

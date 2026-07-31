@@ -42,7 +42,7 @@ export async function syncNexusModsData(mods: Mod[]): Promise<Mod[]> {
             }
           }
         } catch (e) {
-          console.error(`Failed to fetch for ${mod.name}`, e)
+          console.error(`Failed to fetch for ${mod.name} (Nexus ID: ${mod.nexusId}):`, e)
         }
       })
     )

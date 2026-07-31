@@ -68,6 +68,9 @@ export function MO2Viewer() {
     try {
       const updatedMods = await syncNexusModsData(mods)
       setMods([...updatedMods])
+    } catch (e) {
+      console.error("Sync Nexus error:", e)
+      alert(`Failed to sync with Nexus: ${e instanceof Error ? e.message : String(e)}. Check console.`)
     } finally {
       setIsSyncing(false)
     }

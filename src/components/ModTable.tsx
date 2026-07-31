@@ -130,22 +130,58 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
             </TableHeader>
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-muted/50 data-[state=selected]:bg-muted"
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell
-                        key={cell.id}
-                        className="border-x border-b border-border/50 px-2 py-1 text-xs align-top"
+                table.getRowModel().rows.map((row) => {
+                  if (row.original.isSeparator) {
+                    return (
+                      <TableRow
+                        key={row.id}
+                        className="bg-secondary/60 hover:bg-secondary/80 font-bold"
                       >
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
+                        {row.getVisibleCells().map((cell, idx) => {
+                          if (idx === 0) {
+                            return (
+                              <TableCell
+                                key={cell.id}
+                                className="border-x border-b border-border/50 px-2 py-1 text-xs align-top"
+                              >
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                              </TableCell>
+                            )
+                          }
+                          if (idx === 1) {
+                            return (
+                              <TableCell
+                                key={cell.id}
+                                colSpan={row.getVisibleCells().length - 1}
+                                className="border-x border-b border-border/50 px-2 py-1 text-xs text-left text-foreground font-semibold"
+                              >
+                                {row.original.name.replace(/^Separator\s+/, "")}
+                              </TableCell>
+                            )
+                          }
+                          return null
+                        })}
+                      </TableRow>
+                    )
+                  }
+
+                  return (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="hover:bg-muted/50 data-[state=selected]:bg-muted"
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell
+                          key={cell.id}
+                          className="border-x border-b border-border/50 px-2 py-1 text-xs align-top"
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  )
+                })
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center text-sm">

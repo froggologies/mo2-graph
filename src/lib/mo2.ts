@@ -19,7 +19,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
     .map((l: string) => l.trim())
     .filter((l: string) => l && !l.startsWith("#"))
 
-  const modMap = new Map<string, { priority: number; status: string }>()
+  const modMap = new Map<string, { priority: number; status: string; isSeparator?: boolean }>()
   let priority = 0
 
   for (let i = lines.length - 1; i >= 0; i--) {
@@ -47,7 +47,12 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
       name = line
     }
 
-    modMap.set(name, { priority: priority++, status })
+    let isSeparator = false
+    if (name.startsWith("Separator ")) {
+      isSeparator = true
+    }
+
+    modMap.set(name, { priority: priority++, status, isSeparator })
   }
 
   const modsHandle = await currentHandle.getDirectoryHandle("mods")
@@ -84,6 +89,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
             requirements: cacheEntry?.requirements,
             version,
             newestVersion,
+            isSeparator: modInfo.isSeparator,
           })
           modMap.delete(entry.name)
         } else {
@@ -105,11 +111,12 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
   }
 
   for (const [name, info] of modMap.entries()) {
-    if (info.status === "Unmanaged") {
+    if (info.status === "Unmanaged" || info.isSeparator) {
       resultMods.push({
         priority: info.priority,
         name: name,
-        status: "Unmanaged",
+        status: info.status as any,
+        isSeparator: info.isSeparator,
       })
     }
   }

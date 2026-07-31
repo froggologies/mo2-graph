@@ -16,8 +16,8 @@ export function TestMeta() {
         if (entry.kind === "directory") {
           console.log(`\nChecking directory: ${entry.name}`)
           try {
-            const fileHandle = await entry.getFileHandle("meta.ini")
-            console.log(`Successfully got handle for meta.ini in ${entry.name}`)
+            const fileHandle = await entry.getFileHandle("meta.txt")
+            console.log(`Successfully got handle for meta.txt in ${entry.name}`)
 
             const file = await fileHandle.getFile()
             console.log(`File size: ${file.size} bytes`)

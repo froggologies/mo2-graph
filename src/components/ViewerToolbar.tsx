@@ -58,7 +58,8 @@ export function ViewerToolbar({
     }
   }
 
-  const psScript = `$mo2Dir = "C:\\Path\\To\\MO2"
+  const mo2FolderName = handle?.name || "MO2"
+  const psScript = `$mo2Dir = "C:\\Path\\To\\${mo2FolderName}"
 $modsDir = Join-Path $mo2Dir "mods"
 $cacheDir = Join-Path $mo2Dir "meta_cache"
 
@@ -73,6 +74,15 @@ Get-ChildItem -Path $modsDir -Directory | ForEach-Object {
     }
 }
 Write-Host "meta.txt cache created successfully!"`
+
+  const copyScript = async () => {
+    try {
+      await navigator.clipboard.writeText(psScript)
+      alert("Script copied to clipboard!")
+    } catch (err) {
+      console.error("Failed to copy", err)
+    }
+  }
 
   return (
     <div className="flex w-full items-center gap-2 px-2 py-1 border-b bg-background shrink-0 z-10 relative">
@@ -118,11 +128,11 @@ Write-Host "meta.txt cache created successfully!"`
                   Windows Sync Blocked
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
                   <DialogTitle>Windows File Access Blocked</DialogTitle>
                 </DialogHeader>
-                <div className="space-y-4 text-sm mt-4">
+                <div className="space-y-4 text-sm mt-4 break-words">
                   <p>
                     Your browser's security settings explicitly block reading <code className="bg-muted px-1 py-0.5 rounded">.ini</code> files on Windows. We cannot read the Nexus IDs from your mods automatically.
                   </p>
@@ -132,13 +142,24 @@ Write-Host "meta.txt cache created successfully!"`
                   <p className="font-semibold">Instructions:</p>
                   <ol className="list-decimal pl-5 space-y-2">
                     <li>Copy the PowerShell script below.</li>
-                    <li>Change <code className="bg-muted px-1 py-0.5 rounded">"C:\Path\To\MO2"</code> to your actual MO2 installation path.</li>
+                    <li>Change <code className="bg-muted px-1 py-0.5 rounded">"C:\Path\To\{mo2FolderName}"</code> to your actual MO2 installation path.</li>
                     <li>Open PowerShell and run the script.</li>
                     <li>Come back here and click <strong>Load</strong> again.</li>
                   </ol>
-                  <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto select-all">
-                    {psScript}
-                  </pre>
+                  
+                  <div className="relative group">
+                    <pre className="bg-muted p-4 rounded-md text-xs overflow-x-auto whitespace-pre-wrap break-all">
+                      {psScript}
+                    </pre>
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={copyScript}
+                    >
+                      Copy Script
+                    </Button>
+                  </div>
                 </div>
               </DialogContent>
             </Dialog>

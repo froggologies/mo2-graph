@@ -12,14 +12,17 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
   }
 
   const modlistFile = await modlistHandle.getFile()
-  const modlistText = await modlistFile.text()
+  let modlistText = await modlistFile.text()
+  
+  // Remove BOM if present
+  modlistText = modlistText.replace(/^\uFEFF/, "")
 
   const lines = modlistText
-    .split("\n")
+    .split(/\r?\n/)
     .map((l: string) => l.trim())
     .filter((l: string) => l && !l.startsWith("#"))
 
-  const modMap = new Map<string, { priority: number; status: string; isSeparator?: boolean }>()
+  const modMap = new Map<string, { priority: number; status: string; isSeparator?: boolean; originalName: string }>()
   let priority = 0
 
   for (let i = lines.length - 1; i >= 0; i--) {
@@ -52,7 +55,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
       isSeparator = true
     }
 
-    modMap.set(name, { priority: priority++, status, isSeparator })
+    modMap.set(name.toLowerCase(), { priority: priority++, status, isSeparator, originalName: name })
   }
 
   const modsHandle = await currentHandle.getDirectoryHandle("mods")
@@ -78,7 +81,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
         const newestVersionMatch = metaText.match(/^newestVersion=(.*)$/m)
         const newestVersion = newestVersionMatch ? newestVersionMatch[1].trim() : undefined
 
-        const modInfo = modMap.get(entry.name)
+        const modInfo = modMap.get(entry.name.toLowerCase())
         if (modInfo) {
           resultMods.push({
             priority: modInfo.priority,
@@ -91,7 +94,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
             newestVersion,
             isSeparator: modInfo.isSeparator,
           })
-          modMap.delete(entry.name)
+          modMap.delete(entry.name.toLowerCase())
         } else {
           resultMods.push({
             priority: -1,
@@ -110,11 +113,11 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
     }
   }
 
-  for (const [name, info] of modMap.entries()) {
+  for (const [lowerName, info] of modMap.entries()) {
     if (info.status === "Unmanaged" || info.isSeparator) {
       resultMods.push({
         priority: info.priority,
-        name: name,
+        name: info.originalName,
         status: info.status as any,
         isSeparator: info.isSeparator,
       })

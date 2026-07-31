@@ -1,0 +1,10 @@
+---
+import Layout from "../layouts/main.astro"
+import { TestMeta } from "../components/TestMeta"
+---
+
+<Layout title="Test Meta Access">
+  <div class="mx-auto max-w-2xl">
+    <TestMeta client:only="react" />
+  </div>
+</Layout>

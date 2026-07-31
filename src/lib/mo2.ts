@@ -66,7 +66,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
 
   for await (const entry of modsHandle.values()) {
     if (entry.kind === "directory") {
-      const modDirHandle = await modsHandle.getDirectoryHandle(entry.name)
+      const modDirHandle = entry
       let nexusId: string | undefined
       let version: string | undefined
       let newestVersion: string | undefined

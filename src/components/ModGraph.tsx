@@ -8,7 +8,7 @@ import {
   MarkerType,
 } from "@xyflow/react"
 import "@xyflow/react/dist/style.css"
-import dagre from "dagre"
+import ELK from "elkjs/lib/elk.bundled.js"
 import type { Mod } from "@/types"
 
 interface ModGraphProps {
@@ -20,41 +20,50 @@ const nodeHeight = 36
 const charWidth = 7 // approximate px per character at text-xs
 const nodePadding = 24
 
+const elk = new ELK()
+
+const elkOptions = {
+  "elk.algorithm": "layered",
+  "elk.direction": "DOWN",
+  "elk.spacing.nodeNode": "20",
+  "elk.layered.spacing.nodeNodeBetweenLayers": "50",
+  "elk.edgeRouting": "ORTHOGONAL",
+}
+
 const getNodeWidth = (label: string) => {
   return Math.max(80, Math.min(300, label.length * charWidth + nodePadding))
 }
 
-const getLayoutedElements = (nodes: any[], edges: any[], direction = "TB") => {
-  const dagreGraph = new dagre.graphlib.Graph()
-  dagreGraph.setDefaultEdgeLabel(() => ({}))
+const getLayoutedElements = async (nodes: any[], edges: any[]) => {
+  const graph = {
+    id: "root",
+    layoutOptions: elkOptions,
+    children: nodes.map((node) => ({
+      id: node.id,
+      width: node.style?.width || 120,
+      height: nodeHeight,
+    })),
+    edges: edges.map((edge) => ({
+      id: edge.id,
+      sources: [edge.source],
+      targets: [edge.target],
+    })),
+  }
 
-  dagreGraph.setGraph({ rankdir: direction, nodesep: 20, ranksep: 50 })
+  const layoutedGraph = await elk.layout(graph)
 
-  nodes.forEach((node) => {
-    const w = node.style?.width || 120
-    dagreGraph.setNode(node.id, { width: w, height: nodeHeight })
-  })
-
-  edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target)
-  })
-
-  dagre.layout(dagreGraph)
-
-  const newNodes = nodes.map((node) => {
-    const nodeWithPosition = dagreGraph.node(node.id)
-    const w = node.style?.width || 120
-    const newNode = { ...node }
-
-    newNode.position = {
-      x: nodeWithPosition.x - w / 2,
-      y: nodeWithPosition.y - nodeHeight / 2,
+  const layoutedNodes = nodes.map((node) => {
+    const layoutedNode = layoutedGraph.children?.find((n) => n.id === node.id)
+    return {
+      ...node,
+      position: {
+        x: layoutedNode?.x ?? 0,
+        y: layoutedNode?.y ?? 0,
+      },
     }
-
-    return newNode
   })
 
-  return { nodes: newNodes, edges }
+  return { nodes: layoutedNodes, edges }
 }
 
 export function ModGraph({ mods, isDarkMode }: ModGraphProps) {
@@ -169,13 +178,14 @@ export function ModGraph({ mods, isDarkMode }: ModGraphProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([])
 
   useEffect(() => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-      initialNodes,
-      initialEdges
-    )
+    if (initialNodes.length === 0) return
 
-    setNodes([...layoutedNodes])
-    setEdges([...layoutedEdges])
+    getLayoutedElements(initialNodes, initialEdges).then(
+      ({ nodes: layoutedNodes, edges: layoutedEdges }) => {
+        setNodes([...layoutedNodes])
+        setEdges([...layoutedEdges])
+      }
+    )
   }, [initialNodes, initialEdges, setNodes, setEdges])
 
   if (nodes.length === 0) {

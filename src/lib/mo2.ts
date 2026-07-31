@@ -67,48 +67,53 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
   for await (const entry of modsHandle.values()) {
     if (entry.kind === "directory") {
       const modDirHandle = await modsHandle.getDirectoryHandle(entry.name)
+      let nexusId: string | undefined
+      let version: string | undefined
+      let newestVersion: string | undefined
+      
       try {
         const metaFileHandle = await modDirHandle.getFileHandle("meta.ini")
         const metaFile = await metaFileHandle.getFile()
         const metaText = await metaFile.text()
         const modidMatch = metaText.match(/^modid=(.*)$/m)
-        const nexusId = modidMatch ? modidMatch[1].trim() : undefined
-        const cacheEntry = nexusId ? nexusCache[nexusId] : undefined
+        nexusId = modidMatch ? modidMatch[1].trim() : undefined
 
         const versionMatch = metaText.match(/^version=(.*)$/m)
-        const version = versionMatch ? versionMatch[1].trim() : undefined
+        version = versionMatch ? versionMatch[1].trim() : undefined
         
         const newestVersionMatch = metaText.match(/^newestVersion=(.*)$/m)
-        const newestVersion = newestVersionMatch ? newestVersionMatch[1].trim() : undefined
+        newestVersion = newestVersionMatch ? newestVersionMatch[1].trim() : undefined
+      } catch (e) {
+        // No meta.ini or failed to read, proceed without nexus metadata
+      }
 
-        const modInfo = modMap.get(entry.name.toLowerCase())
-        if (modInfo) {
-          resultMods.push({
-            priority: modInfo.priority,
-            name: entry.name,
-            status: modInfo.status as any,
-            nexusId,
-            category: cacheEntry?.category,
-            requirements: cacheEntry?.requirements,
-            version,
-            newestVersion,
-            isSeparator: modInfo.isSeparator,
-          })
-          modMap.delete(entry.name.toLowerCase())
-        } else {
-          resultMods.push({
-            priority: -1,
-            name: entry.name,
-            status: "Disabled",
-            nexusId,
-            category: cacheEntry?.category,
-            requirements: cacheEntry?.requirements,
-            version,
-            newestVersion,
-          })
-        }
-      } catch {
-        // No meta.ini, skip
+      const cacheEntry = nexusId ? nexusCache[nexusId] : undefined
+
+      const modInfo = modMap.get(entry.name.toLowerCase())
+      if (modInfo) {
+        resultMods.push({
+          priority: modInfo.priority,
+          name: entry.name,
+          status: modInfo.status as any,
+          nexusId,
+          category: cacheEntry?.category,
+          requirements: cacheEntry?.requirements,
+          version,
+          newestVersion,
+          isSeparator: modInfo.isSeparator,
+        })
+        modMap.delete(entry.name.toLowerCase())
+      } else {
+        resultMods.push({
+          priority: -1,
+          name: entry.name,
+          status: "Disabled",
+          nexusId,
+          category: cacheEntry?.category,
+          requirements: cacheEntry?.requirements,
+          version,
+          newestVersion,
+        })
       }
     }
   }

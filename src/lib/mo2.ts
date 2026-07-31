@@ -51,7 +51,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
     }
 
     let isSeparator = false
-    if (name.startsWith("Separator ")) {
+    if (name.endsWith("_separator")) {
       isSeparator = true
     }
 
@@ -74,7 +74,22 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
       try {
         const metaFileHandle = await modDirHandle.getFileHandle("meta.ini")
         const metaFile = await metaFileHandle.getFile()
-        const metaText = await metaFile.text()
+        const buffer = await metaFile.arrayBuffer()
+        const uint8Array = new Uint8Array(buffer)
+        
+        let metaText = ""
+        if (uint8Array.length >= 2 && uint8Array[0] === 0xff && uint8Array[1] === 0xfe) {
+          metaText = new TextDecoder("utf-16le").decode(buffer)
+        } else if (uint8Array.length >= 2 && uint8Array[0] === 0xfe && uint8Array[1] === 0xff) {
+          metaText = new TextDecoder("utf-16be").decode(buffer)
+        } else {
+          metaText = new TextDecoder("utf-8").decode(buffer)
+          // If it has null bytes, it might be UTF-16LE without BOM
+          if (metaText.indexOf("\x00") !== -1) {
+            metaText = new TextDecoder("utf-16le").decode(buffer)
+          }
+        }
+
         const modidMatch = metaText.match(/^modid=(.*)$/m)
         nexusId = modidMatch ? modidMatch[1].trim() : undefined
 

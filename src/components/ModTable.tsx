@@ -155,7 +155,7 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
                                 colSpan={row.getVisibleCells().length - 1}
                                 className="border-x border-b border-border/50 px-2 py-1 text-xs text-left text-foreground font-semibold"
                               >
-                                {row.original.name.replace(/^Separator\s+/, "")}
+                                {row.original.name.replace(/_separator$/, "")}
                               </TableCell>
                             )
                           }

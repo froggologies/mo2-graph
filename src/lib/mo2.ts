@@ -72,6 +72,9 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
       let newestVersion: string | undefined
       
       try {
+        if (typeof (modDirHandle as any).requestPermission === "function") {
+          await (modDirHandle as any).requestPermission({ mode: "read" })
+        }
         const metaFileHandle = await modDirHandle.getFileHandle("meta.ini")
         const metaFile = await metaFileHandle.getFile()
         const buffer = await metaFile.arrayBuffer()

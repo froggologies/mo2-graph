@@ -9,24 +9,7 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import dagre from 'dagre';
-
-interface ModRequirement {
-  modName: string;
-  modId: string;
-  externalRequirement?: boolean;
-  url?: string;
-}
-
-interface Mod {
-  priority: number;
-  name: string;
-  status: "Always Enabled" | "Enabled" | "Disabled";
-  nexusId?: string;
-  category?: string;
-  requirements?: ModRequirement[];
-  version?: string;
-  newestVersion?: string;
-}
+import type { Mod } from '@/types';
 
 interface ModGraphProps {
   mods: Mod[];

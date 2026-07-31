@@ -8,7 +8,7 @@ export interface ModRequirement {
 export interface Mod {
   priority: number
   name: string
-  status: "Always Enabled" | "Enabled" | "Disabled"
+  status: "Unmanaged" | "Enabled" | "Disabled"
   nexusId?: string
   category?: string
   requirements?: ModRequirement[]

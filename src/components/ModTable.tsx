@@ -28,19 +28,19 @@ import type { Mod } from "@/types"
 
 interface ModTableProps {
   mods: Mod[]
-  showAlwaysEnabled: boolean
-  setShowAlwaysEnabled: (show: boolean) => void
+  showUnmanaged: boolean
+  setShowUnmanaged: (show: boolean) => void
 }
 
-export function ModTable({ mods, showAlwaysEnabled, setShowAlwaysEnabled }: ModTableProps) {
+export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProps) {
   const [sorting, setSorting] = React.useState<any>([{ id: "priority", desc: false }])
   const [columnFilters, setColumnFilters] = React.useState<any>([])
   const [columnVisibility, setColumnVisibility] = React.useState<any>({})
 
   const filteredMods = React.useMemo(() => {
-    if (showAlwaysEnabled) return mods
-    return mods.filter((m) => m.status !== "Always Enabled")
-  }, [mods, showAlwaysEnabled])
+    if (showUnmanaged) return mods
+    return mods.filter((m) => m.status !== "Unmanaged")
+  }, [mods, showUnmanaged])
 
   const columns = React.useMemo(() => getColumns(), [])
 
@@ -76,10 +76,10 @@ export function ModTable({ mods, showAlwaysEnabled, setShowAlwaysEnabled }: ModT
           />
           <Button
             size="sm"
-            variant={showAlwaysEnabled ? "default" : "outline"}
-            onClick={() => setShowAlwaysEnabled(!showAlwaysEnabled)}
+            variant={showUnmanaged ? "default" : "outline"}
+            onClick={() => setShowUnmanaged(!showUnmanaged)}
           >
-            Always Enabled: {showAlwaysEnabled ? "Show" : "Hide"}
+            Unmanaged: {showUnmanaged ? "Show" : "Hide"}
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

@@ -28,7 +28,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
     let name = line.substring(1)
 
     if (line.startsWith("*")) {
-      status = "Always Enabled"
+      status = "Unmanaged"
     } else if (line.startsWith("+")) {
       status = "Enabled"
     } else if (line.startsWith("-")) {
@@ -105,11 +105,11 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
   }
 
   for (const [name, info] of modMap.entries()) {
-    if (info.status === "Always Enabled") {
+    if (info.status === "Unmanaged") {
       resultMods.push({
         priority: info.priority,
         name: name,
-        status: "Always Enabled",
+        status: "Unmanaged",
       })
     }
   }

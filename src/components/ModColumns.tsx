@@ -1,6 +1,6 @@
 import * as React from "react"
 import { Button } from "@/components/ui/button"
-import { ArrowUpDown } from "lucide-react"
+import { ArrowUpDown, Check, X } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
 import type { Mod, ModRequirement } from "@/types"
 
@@ -57,6 +57,16 @@ export const getColumns = (): ColumnDef<Mod>[] => [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string
+      if (status === "Enabled") {
+        return <Check className="h-4 w-4 text-green-500" />
+      }
+      if (status === "Unmanaged") {
+        return <Check className="h-4 w-4 text-muted-foreground" />
+      }
+      return <X className="h-4 w-4 text-red-500" />
+    },
   },
   {
     accessorKey: "category",

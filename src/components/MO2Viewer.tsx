@@ -21,7 +21,7 @@ export function MO2Viewer() {
   const [profiles, setProfiles] = useState<string[]>([])
   const [selectedProfile, setSelectedProfile] = useState<string>("")
   const [mods, setMods] = useState<Mod[]>([])
-  const [showAlwaysEnabled, setShowAlwaysEnabled] = useState(true)
+  const [showUnmanaged, setShowUnmanaged] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
 
   const pickFolder = async () => {
@@ -92,8 +92,8 @@ export function MO2Viewer() {
           <ResizablePanel defaultSize={65} minSize={20}>
             <ModTable
               mods={mods}
-              showAlwaysEnabled={showAlwaysEnabled}
-              setShowAlwaysEnabled={setShowAlwaysEnabled}
+              showUnmanaged={showUnmanaged}
+              setShowUnmanaged={setShowUnmanaged}
             />
           </ResizablePanel>
           <ResizableHandle withHandle />

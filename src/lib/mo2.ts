@@ -99,6 +99,7 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
         const newestVersionMatch = metaText.match(/^newestVersion=(.*)$/m)
         newestVersion = newestVersionMatch ? newestVersionMatch[1].trim() : undefined
       } catch (e) {
+        console.warn(`No meta.ini or failed to read for ${entry.name}`, e)
         // No meta.ini or failed to read, proceed without nexus metadata
       }
 

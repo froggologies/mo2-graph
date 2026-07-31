@@ -6,6 +6,13 @@ export async function syncNexusModsData(mods: Mod[]): Promise<Mod[]> {
   const cachedData = localStorage.getItem("mo2_nexus_cache")
   const nexusCache = cachedData ? JSON.parse(cachedData) : {}
 
+  const validMods = updatedMods.filter(m => m.nexusId && m.nexusId !== "0" && m.nexusId !== "-1")
+  console.log(`Syncing Nexus data for ${validMods.length} out of ${updatedMods.length} mods`)
+  if (validMods.length === 0) {
+    alert("No mods with valid Nexus IDs found. Check if meta.ini is being read properly.")
+    return updatedMods
+  }
+
   for (let i = 0; i < updatedMods.length; i += batchSize) {
     const batch = updatedMods.slice(i, i + batchSize)
     await Promise.all(

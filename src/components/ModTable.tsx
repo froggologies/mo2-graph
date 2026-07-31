@@ -108,7 +108,7 @@ export function ModTable({ mods, showUnmanaged, setShowUnmanaged }: ModTableProp
         </div>
       </div>
       <div className="flex-1 p-0 overflow-auto">
-        <div className="border-b">
+        <div className="border-b [&>div]:overflow-visible">
           <Table className="w-full border-collapse">
             <TableHeader className="sticky top-0 z-10 shadow-sm bg-muted">
               {table.getHeaderGroups().map((headerGroup) => (

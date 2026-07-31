@@ -23,6 +23,7 @@ export function MO2Viewer() {
   const [mods, setMods] = useState<Mod[]>([])
   const [showUnmanaged, setShowUnmanaged] = useState(false)
   const [isSyncing, setIsSyncing] = useState(false)
+  const [metaIniBlocked, setMetaIniBlocked] = useState(false)
 
   const pickFolder = async () => {
     try {
@@ -40,10 +41,9 @@ export function MO2Viewer() {
       }
       setProfiles(profileNames)
       if (profileNames.length > 0) {
-        setSelectedProfile(profileNames[0])
-        if (profileNames.length === 1) {
-          handleLoadMods(dirHandle, profileNames[0])
-        }
+        const targetProfile = profileNames.includes("Default") ? "Default" : profileNames[0]
+        setSelectedProfile(targetProfile)
+        handleLoadMods(dirHandle, targetProfile)
       }
     } catch (e) {
       console.error(e)
@@ -55,8 +55,9 @@ export function MO2Viewer() {
     const currentProfile = targetProfile || selectedProfile
     if (!currentHandle || !currentProfile) return
     try {
-      const resultMods = await loadMo2Mods(currentHandle, currentProfile)
+      const { mods: resultMods, metaIniBlocked: blocked } = await loadMo2Mods(currentHandle, currentProfile)
       setMods(resultMods)
+      setMetaIniBlocked(blocked)
     } catch (e) {
       console.error(e)
       alert("Error loading mods. Check console for details.")
@@ -82,11 +83,15 @@ export function MO2Viewer() {
         handle={handle}
         profiles={profiles}
         selectedProfile={selectedProfile}
-        setSelectedProfile={setSelectedProfile}
+        onSelectProfile={setSelectedProfile}
         onPickFolder={pickFolder}
         onLoadMods={() => handleLoadMods()}
         onSyncNexus={handleSyncNexus}
         isSyncing={isSyncing}
+        showUnmanaged={showUnmanaged}
+        onToggleUnmanaged={setShowUnmanaged}
+        isDarkMode={isDarkMode}
+        metaIniBlocked={metaIniBlocked}
         hasMods={mods.length > 0}
       />
 

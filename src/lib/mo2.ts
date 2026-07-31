@@ -1,6 +1,6 @@
 import type { Mod } from "@/types"
 
-export async function loadMo2Mods(currentHandle: any, currentProfile: string): Promise<Mod[]> {
+export async function loadMo2Mods(currentHandle: any, currentProfile: string): Promise<{ mods: Mod[], metaIniBlocked: boolean }> {
   const profilesHandle = await currentHandle.getDirectoryHandle("profiles")
   const profileHandle = await profilesHandle.getDirectoryHandle(currentProfile)
 
@@ -64,6 +64,14 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
   const cachedData = localStorage.getItem("mo2_nexus_cache")
   const nexusCache = cachedData ? JSON.parse(cachedData) : {}
 
+  let metaIniBlocked = false
+  let metaCacheHandle: any = null
+  try {
+    metaCacheHandle = await currentHandle.getDirectoryHandle("meta_cache")
+  } catch (e) {
+    // meta_cache doesn't exist
+  }
+
   for await (const entry of modsHandle.values()) {
     if (entry.kind === "directory") {
       const modDirHandle = entry
@@ -75,7 +83,33 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
         if (typeof (modDirHandle as any).requestPermission === "function") {
           await (modDirHandle as any).requestPermission({ mode: "read" })
         }
-        const metaFileHandle = await modDirHandle.getFileHandle("meta.ini")
+        
+        let metaFileHandle: any = null;
+        let useFallback = false;
+        try {
+          metaFileHandle = await modDirHandle.getFileHandle("meta.ini")
+        } catch (e: any) {
+          if (e.name === "TypeError" && e.message.includes("Name is not allowed")) {
+            metaIniBlocked = true
+            useFallback = true
+          } else {
+            throw e
+          }
+        }
+
+        if (useFallback && metaCacheHandle) {
+          try {
+            const cachedModDirHandle = await metaCacheHandle.getDirectoryHandle(entry.name)
+            metaFileHandle = await cachedModDirHandle.getFileHandle("meta.txt")
+          } catch (err) {
+            // No fallback file
+          }
+        }
+
+        if (!metaFileHandle) {
+          throw new Error("meta.ini not found and no fallback available")
+        }
+
         const metaFile = await metaFileHandle.getFile()
         const buffer = await metaFile.arrayBuffer()
         const uint8Array = new Uint8Array(buffer)
@@ -147,6 +181,5 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
     }
   }
 
-  resultMods.sort((a, b) => a.priority - b.priority)
-  return resultMods
+  return { mods: resultMods.sort((a, b) => a.priority - b.priority), metaIniBlocked }
 }

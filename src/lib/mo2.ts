@@ -72,7 +72,15 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
       let newestVersion: string | undefined
       
       try {
-        const metaFileHandle = await modDirHandle.getFileHandle("meta.ini")
+        let metaFileHandle: FileSystemFileHandle | undefined
+        for await (const [fname, fentry] of (modDirHandle as any).entries()) {
+          if (fname.toLowerCase() === "meta.ini" && fentry.kind === "file") {
+            metaFileHandle = fentry as FileSystemFileHandle
+            break
+          }
+        }
+        if (!metaFileHandle) throw new Error("meta.ini not found")
+
         const metaFile = await metaFileHandle.getFile()
         const buffer = await metaFile.arrayBuffer()
         const uint8Array = new Uint8Array(buffer)
@@ -84,7 +92,6 @@ export async function loadMo2Mods(currentHandle: any, currentProfile: string): P
           metaText = new TextDecoder("utf-16be").decode(buffer)
         } else {
           metaText = new TextDecoder("utf-8").decode(buffer)
-          // If it has null bytes, it might be UTF-16LE without BOM
           if (metaText.indexOf("\x00") !== -1) {
             metaText = new TextDecoder("utf-16le").decode(buffer)
           }

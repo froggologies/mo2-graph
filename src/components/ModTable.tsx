@@ -82,7 +82,7 @@ export function ModTable({
             onChange={(event) =>
               table.getColumn("name")?.setFilterValue(event.target.value)
             }
-            className="h-7 max-w-[180px] text-xs"
+            className="h-7 max-w-45 text-xs"
           />
           <Button
             size="sm"
@@ -92,7 +92,7 @@ export function ModTable({
             Unmanaged: {showUnmanaged ? "Show" : "Hide"}
           </Button>
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger>
               <Button size="sm" variant="outline">
                 Columns <ChevronDown className="ml-2 h-3 w-3" />
               </Button>

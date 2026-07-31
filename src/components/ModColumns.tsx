@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowUpDown, Check, X } from "lucide-react"
 import type { ColumnDef } from "@tanstack/react-table"
@@ -20,7 +19,7 @@ export const getColumns = (): ColumnDef<Mod>[] => [
     },
     cell: ({ row }) => {
       const p = row.getValue("priority") as number
-      return <div className="font-medium text-center">{p >= 0 ? p : "-"}</div>
+      return <div className="text-center font-medium">{p >= 0 ? p : "-"}</div>
     },
   },
   {
@@ -45,7 +44,7 @@ export const getColumns = (): ColumnDef<Mod>[] => [
             href={`https://www.nexusmods.com/skyrimspecialedition/mods/${nexusId}`}
             target="_blank"
             rel="noreferrer"
-            className="text-blue-500 dark:text-blue-400 hover:underline"
+            className="text-blue-500 hover:underline dark:text-blue-400"
           >
             {name}
           </a>
@@ -82,7 +81,7 @@ export const getColumns = (): ColumnDef<Mod>[] => [
       const allMods = table.options.data as Mod[]
 
       return (
-        <div className="flex max-w-[300px] flex-col gap-1">
+        <div className="flex max-w-75 flex-col gap-1">
           {reqs.map((r) => {
             const exists = allMods.some((m) => m.nexusId === r.modId)
             const isExternal = r.externalRequirement
@@ -120,19 +119,21 @@ export const getColumns = (): ColumnDef<Mod>[] => [
     cell: ({ row }) => {
       const version = row.getValue("version") as string | undefined
       const newestVersion = row.original.newestVersion
-      
+
       if (!version) return null
-      
+
       const isOutdated = newestVersion && version !== newestVersion
-      
+
       return (
-        <span 
-          className={isOutdated ? 'font-medium text-red-500 dark:text-red-400' : ''}
+        <span
+          className={
+            isOutdated ? "font-medium text-red-500 dark:text-red-400" : ""
+          }
           title={isOutdated ? `Latest: ${newestVersion}` : undefined}
         >
           {version}
         </span>
       )
-    }
+    },
   },
 ]

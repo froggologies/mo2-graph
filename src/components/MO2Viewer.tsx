@@ -1,4 +1,3 @@
-import * as React from "react"
 import { useState, useCallback } from "react"
 import {
   ResizableHandle,
@@ -41,7 +40,9 @@ export function MO2Viewer() {
       }
       setProfiles(profileNames)
       if (profileNames.length > 0) {
-        const targetProfile = profileNames.includes("Default") ? "Default" : profileNames[0]
+        const targetProfile = profileNames.includes("Default")
+          ? "Default"
+          : profileNames[0]
         setSelectedProfile(targetProfile)
         handleLoadMods(dirHandle, targetProfile)
       }
@@ -50,19 +51,25 @@ export function MO2Viewer() {
     }
   }
 
-  const handleLoadMods = useCallback(async (targetHandle?: any, targetProfile?: string) => {
-    const currentHandle = targetHandle || handle
-    const currentProfile = targetProfile || selectedProfile
-    if (!currentHandle || !currentProfile) return
-    try {
-      const { mods: resultMods, metaIniBlocked: blocked } = await loadMo2Mods(currentHandle, currentProfile)
-      setMods(resultMods)
-      setMetaIniBlocked(blocked)
-    } catch (e) {
-      console.error(e)
-      alert("Error loading mods. Check console for details.")
-    }
-  }, [handle, selectedProfile])
+  const handleLoadMods = useCallback(
+    async (targetHandle?: any, targetProfile?: string) => {
+      const currentHandle = targetHandle || handle
+      const currentProfile = targetProfile || selectedProfile
+      if (!currentHandle || !currentProfile) return
+      try {
+        const { mods: resultMods, metaIniBlocked: blocked } = await loadMo2Mods(
+          currentHandle,
+          currentProfile
+        )
+        setMods(resultMods)
+        setMetaIniBlocked(blocked)
+      } catch (e) {
+        console.error(e)
+        alert("Error loading mods. Check console for details.")
+      }
+    },
+    [handle, selectedProfile]
+  )
 
   const handleSyncNexus = async () => {
     setIsSyncing(true)
@@ -71,7 +78,9 @@ export function MO2Viewer() {
       setMods([...updatedMods])
     } catch (e) {
       console.error("Sync Nexus error:", e)
-      alert(`Failed to sync with Nexus: ${e instanceof Error ? e.message : String(e)}. Check console.`)
+      alert(
+        `Failed to sync with Nexus: ${e instanceof Error ? e.message : String(e)}. Check console.`
+      )
     } finally {
       setIsSyncing(false)
     }
@@ -96,7 +105,10 @@ export function MO2Viewer() {
       />
 
       {mods.length > 0 ? (
-        <ResizablePanelGroup orientation={isDesktop ? "horizontal" : "vertical"} className="flex-1 overflow-hidden min-h-0">
+        <ResizablePanelGroup
+          orientation={isDesktop ? "horizontal" : "vertical"}
+          className="min-h-0 flex-1 overflow-hidden"
+        >
           <ResizablePanel defaultSize={65} minSize={20}>
             <ModTable
               mods={mods}
@@ -106,11 +118,13 @@ export function MO2Viewer() {
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={35} minSize={20} collapsible={true}>
-            <div className="flex flex-col h-full overflow-hidden">
-              <div className="flex items-center px-2 py-1 border-b shrink-0 bg-muted/30">
-                <span className="text-xs font-semibold text-muted-foreground">Dependency Graph</span>
+            <div className="flex h-full flex-col overflow-hidden">
+              <div className="flex shrink-0 items-center border-b bg-muted/30 px-2 py-1">
+                <span className="text-xs font-semibold text-muted-foreground">
+                  Dependency Graph
+                </span>
               </div>
-              <div className="flex-1 relative">
+              <div className="relative flex-1">
                 <ModGraph mods={mods} isDarkMode={isDarkMode} />
               </div>
             </div>

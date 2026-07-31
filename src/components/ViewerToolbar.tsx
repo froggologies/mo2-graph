@@ -1,4 +1,3 @@
-import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Moon, Sun, AlertTriangle } from "lucide-react"
 import {
@@ -91,7 +90,7 @@ Write-Host "meta.txt cache created successfully!"`
         Select MO2 Folder
       </Button>
       {handle && (
-        <span className="max-w-[200px] truncate text-xs text-muted-foreground">
+        <span className="max-w-50 truncate text-xs text-muted-foreground">
           {handle.name}
         </span>
       )}
@@ -101,7 +100,7 @@ Write-Host "meta.txt cache created successfully!"`
             value={selectedProfile}
             onValueChange={(val) => onSelectProfile(val ?? "")}
           >
-            <SelectTrigger className="h-7 w-[160px] text-xs">
+            <SelectTrigger className="h-7 w-40 text-xs">
               <SelectValue placeholder="Select Profile" />
             </SelectTrigger>
             <SelectContent>
@@ -124,7 +123,7 @@ Write-Host "meta.txt cache created successfully!"`
 
           {metaIniBlocked && (
             <Dialog>
-              <DialogTrigger asChild>
+              <DialogTrigger>
                 <Button
                   size="sm"
                   variant="destructive"
@@ -138,7 +137,7 @@ Write-Host "meta.txt cache created successfully!"`
                 <DialogHeader>
                   <DialogTitle>Windows File Access Blocked</DialogTitle>
                 </DialogHeader>
-                <div className="mt-4 space-y-4 text-sm break-words">
+                <div className="mt-4 space-y-4 text-sm wrap-break-word">
                   <p>
                     Your browser's security settings explicitly block reading{" "}
                     <code className="rounded bg-muted px-1 py-0.5">.ini</code>{" "}

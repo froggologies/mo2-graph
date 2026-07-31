@@ -67,7 +67,7 @@ export function ModTable({
   })
 
   return (
-    <div className="flex h-full scrollbar-thin scrollbar-thumb-white scrollbar-track-muted flex-col overflow-hidden">
+    <div className="flex h-full flex-col overflow-hidden">
       <div className="flex shrink-0 items-center gap-2 border-b bg-muted/30 px-2 py-1">
         <div className="flex items-center gap-1">
           <span className="text-xs font-semibold text-muted-foreground">
